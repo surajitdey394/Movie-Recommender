@@ -11,10 +11,9 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from scipy import stats
 from ast import literal_eval
-from sklearn.feature_extraction.text import TfidfVectorizer, CountVectorizer
+from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.metrics.pairwise import linear_kernel, cosine_similarity
 from nltk.stem.snowball import SnowballStemmer
-from nltk.stem.wordnet import WordNetLemmatizer
 from nltk.corpus import wordnet
 from surprise import Reader, Dataset, SVD, evaluate
 import warnings; warnings.simplefilter('ignore')
@@ -49,7 +48,6 @@ s = smd.apply(lambda x: pd.Series(x['keywords']),axis=1).stack().reset_index(lev
 s.name = 'keyword'
 s = s[s > 1]
 stemmer = SnowballStemmer('english')
-stemmer.stem('dogs')
 def filter_keywords(x):
     words = []
     for i in x:
@@ -64,6 +62,7 @@ smd['soup'] = smd['soup'].apply(lambda x: ' '.join(x))
 smd['soup'].head()
 count = CountVectorizer(analyzer='word',ngram_range=(1, 2),min_df=0, stop_words='english')
 count_matrix = count.fit_transform(smd['soup'])
+cosine_sim = cosine_similarity(count_matrix, count_matrix)
 smd = smd.reset_index()
 titles = smd['title']
 indices = pd.Series(smd.index, index=smd['title'])
